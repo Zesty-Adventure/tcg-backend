@@ -1,0 +1,179 @@
+{
+  "config": {
+    "collections": [
+      {
+        "id": "COL_001",
+        "name": "Default Collection",
+        "cardLimit": 252,
+        "cards": [],
+        "rarities": []
+      },
+      {
+        "id": "COL_002",
+        "name": "Spark of Rebellion",
+        "cardLimit": 252,
+        "cards": [
+          {
+            "name": "001/252",
+            "image": "https://imgur.com/Ozmue0i.png",
+            "price": "0.08",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "003/252",
+            "image": "https://imgur.com/G28AUgK.png",
+            "price": "0.09",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "005/252",
+            "image": "https://imgur.com/4TdiHIV.png",
+            "price": "2.20",
+            "currency": "USD",
+            "rarity": "Starter"
+          },
+          {
+            "name": "006/252",
+            "image": "https://imgur.com/eqKdomN.png",
+            "price": "0.14",
+            "currency": "USD",
+            "rarity": "Rare"
+          },
+          {
+            "name": "007/252",
+            "image": "https://imgur.com/e5u0Wpk.png",
+            "price": "0.06",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "008/252",
+            "image": "https://imgur.com/8HQV3gV.png",
+            "price": "0.07",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "009/252",
+            "image": "https://imgur.com/uOdnNyb.png",
+            "price": "4.69",
+            "currency": "USD",
+            "rarity": "Starter"
+          },
+          {
+            "name": "010/252",
+            "image": "https://imgur.com/Ujr0NcI.png",
+            "price": "0.07",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "032/252",
+            "image": "https://imgur.com/cyf74Ay.png",
+            "price": "0.08",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "033/252",
+            "image": "https://imgur.com/qOHNEn4.png",
+            "price": "0.07",
+            "currency": "USD",
+            "rarity": "Common"
+          },
+          {
+            "name": "035/252",
+            "image": "https://imgur.com/mBsVmrB.png",
+            "price": "0.23",
+            "currency": "USD",
+            "rarity": "Uncommon"
+          },
+          {
+            "name": "037/252",
+            "image": "https://imgur.com/QOfYnDx.png",
+            "price": "0.05",
+            "currency": "USD",
+            "rarity": "Common"
+          }
+        ],
+        "rarities": [
+          {
+            "name": "Starter",
+            "hex": "#000000"
+          },
+          {
+            "name": "Common",
+            "hex": "#453628"
+          },
+          {
+            "name": "Uncommon",
+            "hex": "#b0b0b0"
+          },
+          {
+            "name": "Rare",
+            "hex": "#e0d33d"
+          },
+          {
+            "name": "Legendary",
+            "hex": "#87f5ed"
+          }
+        ]
+      }
+    ],
+    "defaultCollectionId": "COL_002",
+    "lastSavedAt": "2025-12-03T09:48:30.697Z"
+  },
+  "viewers": {
+    "testchannel": {
+      "12345": {
+        "cards": [
+          {
+            "name": "005/252",
+            "image": "https://imgur.com/4TdiHIV.png",
+            "price": "2.20",
+            "currency": "USD",
+            "rarity": "Starter"
+          },
+          {
+            "name": "033/252",
+            "image": "https://imgur.com/qOHNEn4.png",
+            "price": "0.07",
+            "currency": "USD",
+            "rarity": "Common"
+          }
+        ],
+        "totalValue": 2.27
+      }
+    },
+    "zestyadventurebot": {
+      "1095452606": {
+        "cards": [
+          {
+            "name": "035/252",
+            "image": "https://imgur.com/mBsVmrB.png",
+            "price": "0.23",
+            "currency": "USD",
+            "rarity": "Uncommon"
+          },
+          {
+            "name": "009/252",
+            "image": "https://imgur.com/uOdnNyb.png",
+            "price": "4.69",
+            "currency": "USD",
+            "rarity": "Starter"
+          },
+          {
+            "name": "009/252",
+            "image": "https://imgur.com/uOdnNyb.png",
+            "price": "4.69",
+            "currency": "USD",
+            "rarity": "Starter"
+          }
+        ],
+        "totalValue": 9.610000000000001
+      }
+    }
+  }
+}
