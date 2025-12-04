@@ -14,8 +14,8 @@ const CHANNEL_NAME = "zestyadventurebot";
 //    PASTE YOUR REAL TOKEN BETWEEN THE QUOTES, BUT NEVER SHARE IT PUBLICLY.
 const BOT_OAUTH_TOKEN = "oauth:x3bvvjihgngc3zfsfquhczfpk3by7f";
 
-// 4) Your backend URL (for now, local)
-const BACKEND_URL = "http://localhost:3000";
+// 4) Your backend URL — UPDATED FOR RAILWAY
+const BACKEND_URL = "https://tcg-backend-production-29a0.up.railway.app";
 
 // =========================
 // INTERNAL STATE
