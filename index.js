@@ -2,10 +2,44 @@ import express from "express";
 import fs from "fs";
 import cors from "cors";
 import bodyParser from "body-parser";
+import jwt from "jsonwebtoken";
+import fetch from "node-fetch";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+// ------------------------------
+// ENV REQUIREMENTS
+// ------------------------------
+
+const REQUIRED_ENV = ["EXTENSION_ID", "CLIENT_ID", "EXTENSION_SECRET", "REFRESH_SECRET"];
+
+for (const key of REQUIRED_ENV) {
+  if (!process.env[key]) {
+    console.error(`❌ Missing required environment variable: ${key}`);
+  }
+}
+
+// ------------------------------
+// JWT SIGNING FOR PUBSUB
+// ------------------------------
+
+function makeExtensionJwt(channelId) {
+  return jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 30,
+      user_id: channelId,
+      role: "external",
+      channel_id: channelId,
+      pubsub_perms: {
+        send: ["broadcast"]
+      }
+    },
+    process.env.EXTENSION_SECRET,
+    { algorithm: "HS256" }
+  );
+}
 
 // ------------------------------
 // DATA FILE
@@ -140,6 +174,10 @@ app.get("/", (req, res) => {
   res.json({ status: "Backend running!" });
 });
 
+// ------------------------------
+// /sync-config
+// ------------------------------
+
 app.post("/sync-config", (req, res) => {
   const incomingConfig = req.body;
   const data = loadData();
@@ -253,10 +291,59 @@ app.post("/rip-card", (req, res) => {
 });
 
 // ------------------------------
+// NEW: BROADCAST REFRESH ENDPOINT
+// ------------------------------
+
+app.post("/broadcast-refresh", async (req, res) => {
+  const secret = req.headers["x-refresh-key"];
+
+  if (secret !== process.env.REFRESH_SECRET) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const { channelId } = req.body;
+
+  if (!channelId) {
+    return res.status(400).json({ error: "Missing channelId" });
+  }
+
+  const token = makeExtensionJwt(channelId);
+
+  const payload = {
+    content_type: "application/json",
+    message: JSON.stringify({ refresh: true }),
+    targets: ["broadcast"]
+  };
+
+  try {
+    const result = await fetch(
+      `https://api.twitch.tv/extensions/message/${process.env.EXTENSION_ID}/${channelId}`,
+      {
+        method: "POST",
+        headers: {
+          "Client-ID": process.env.CLIENT_ID,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const text = await result.text();
+    console.log("PubSub Response:", text);
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("PubSub error:", err);
+    return res.status(500).json({ error: "PubSub failed" });
+  }
+});
+
+// ------------------------------
 // START SERVER
 // ------------------------------
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Backend running at http://localhost:" + PORT);
 });
