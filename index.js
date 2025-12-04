@@ -105,7 +105,7 @@ function pickRandom(arr) {
 }
 
 // ------------------------------
-// TRUE RIP-CARD LOGIC (reusable)
+// RIP-CARD LOGIC
 // ------------------------------
 
 function performRipCard(channelId, viewerId) {
@@ -117,20 +117,14 @@ function performRipCard(channelId, viewerId) {
   }
 
   const defaultId = config.defaultCollectionId;
-  const streamerCollection = config.collections.find(
-    (col) => col.id === defaultId
-  );
+  const streamerCollection = config.collections.find((c) => c.id === defaultId);
 
-  if (!streamerCollection) {
-    throw new Error("Default collection not found in config");
-  }
+  if (!streamerCollection) throw new Error("Default collection not found");
 
   const streamerCards = streamerCollection.cards || [];
   const rarities = streamerCollection.rarities || [];
 
-  if (!rarities.length) {
-    throw new Error("No rarities defined");
-  }
+  if (!rarities.length) throw new Error("No rarities defined");
 
   const cardsByRarity = {};
   streamerCards.forEach((card) => {
@@ -139,10 +133,7 @@ function performRipCard(channelId, viewerId) {
   });
 
   const selected = getWeightedRarity(rarities, cardsByRarity);
-
-  if (!selected) {
-    throw new Error("No available cards for any rarity");
-  }
+  if (!selected) throw new Error("No available cards for any rarity");
 
   const rarityName = selected.name;
   const cardPool = cardsByRarity[rarityName];
@@ -214,32 +205,23 @@ app.post("/submit-rip", (req, res) => {
   const { viewerId } = req.body;
 
   if (!ripWindowOpen) {
-    return res.json({
-      success: false,
-      message: "No rip window open."
-    });
+    return res.json({ success: false, message: "No rip window open." });
   }
 
   ripParticipants.add(viewerId);
 
-  res.json({
-    success: true,
-    message: "Viewer added to rip list."
-  });
+  res.json({ success: true, message: "Viewer added to rip list." });
 });
 
 // ------------------------------
-// CLOSE RIP WINDOW & AWARD PACKS
+// CLOSE RIP WINDOW
 // ------------------------------
 
 app.post("/resolve-rip-window", (req, res) => {
   const { channelId } = req.body;
 
   if (!ripWindowOpen) {
-    return res.json({
-      success: false,
-      message: "No rip window open."
-    });
+    return res.json({ success: false, message: "No rip window open." });
   }
 
   ripWindowOpen = false;
@@ -261,14 +243,11 @@ app.post("/resolve-rip-window", (req, res) => {
 
   ripParticipants.clear();
 
-  res.json({
-    success: true,
-    winners
-  });
+  res.json({ success: true, winners });
 });
 
 // ------------------------------
-// PUBLIC /rip-card ENDPOINT
+// PUBLIC RIP-CARD
 // ------------------------------
 
 app.post("/rip-card", (req, res) => {
@@ -283,10 +262,7 @@ app.post("/rip-card", (req, res) => {
     });
   } catch (err) {
     console.error("RIP CARD ERROR:", err);
-    res.status(500).json({
-      success: false,
-      error: err.message
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
