@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "body-parser": "latest",
-    "cors": "latest",
-    "express": "latest",
-    "jsonwebtoken": "latest",
-    "node-fetch": "3.3.2",
-    "tmi.js": "^1.8.5"
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2"
   },
   "scripts": {
     "start": "node index.js"
