@@ -2,25 +2,10 @@ import express from "express";
 import fs from "fs";
 import cors from "cors";
 import bodyParser from "body-parser";
-import crypto from "crypto";
-import fetch from "node-fetch";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
-// ------------------------------
-// ENV VARS (Railway)
-// ------------------------------
-const EXTENSION_ID = process.env.EXTENSION_ID;
-const CLIENT_ID = process.env.CLIENT_ID;
-const EXTENSION_SECRET = process.env.EXTENSION_SECRET;
-
-if (!EXTENSION_ID || !CLIENT_ID || !EXTENSION_SECRET) {
-  console.error("❌ Missing required environment variables.");
-  console.error("Required: EXTENSION_ID, CLIENT_ID, EXTENSION_SECRET");
-  process.exit(1);
-}
 
 // ------------------------------
 // DATA FILE
@@ -61,6 +46,7 @@ function getWeightedRarity(rarities, cardsByRarity) {
   });
 
   if (valid.length === 0) return null;
+
   const N = valid.length;
 
   const weightedList = valid.map((rarity, i) => {
@@ -76,6 +62,7 @@ function getWeightedRarity(rarities, cardsByRarity) {
     cumulative += w.weight;
     if (roll <= cumulative) return w.rarity;
   }
+
   return weightedList[weightedList.length - 1].rarity;
 }
 
@@ -146,70 +133,12 @@ function performRipCard(channelId, viewerId) {
 }
 
 // ------------------------------
-// TWITCH PUBSUB BROADCAST
-// ------------------------------
-
-function makeJwt(channelId) {
-  const header = {
-    alg: "HS256",
-    typ: "JWT",
-  };
-
-  const payload = {
-    exp: Math.floor(Date.now() / 1000) + 60,
-    user_id: channelId,
-    channel_id: channelId,
-    role: "external",
-    pubsub_perms: {
-      send: ["broadcast"],
-    },
-  };
-
-  const encode = (data) =>
-    Buffer.from(JSON.stringify(data)).toString("base64url");
-
-  const unsigned = encode(header) + "." + encode(payload);
-
-  const signature = crypto
-    .createHmac("sha256", Buffer.from(EXTENSION_SECRET, "base64"))
-    .update(unsigned)
-    .digest("base64url");
-
-  return `${unsigned}.${signature}`;
-}
-
-async function sendPubSub(channelId, message) {
-  const token = makeJwt(channelId);
-
-  await fetch(
-    `https://api.twitch.tv/extensions/message/${channelId}`,
-    {
-      method: "POST",
-      headers: {
-        "Client-Id": CLIENT_ID,
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content_type: "application/json",
-        message: JSON.stringify(message),
-        targets: ["broadcast"],
-      }),
-    }
-  );
-}
-
-// ------------------------------
 // ROUTES
 // ------------------------------
 
 app.get("/", (req, res) => {
   res.json({ status: "Backend running!" });
 });
-
-// ------------------------------
-// SYNC CONFIG
-// ------------------------------
 
 app.post("/sync-config", (req, res) => {
   const incomingConfig = req.body;
@@ -235,7 +164,7 @@ app.post("/start-rip-window", (req, res) => {
   res.json({
     success: true,
     message: "Rip window opened",
-    closesAt: ripWindowEndsAt,
+    closesAt: ripWindowEndsAt
   });
 });
 
@@ -249,7 +178,7 @@ app.post("/submit-rip", (req, res) => {
   if (!ripWindowOpen) {
     return res.json({
       success: false,
-      message: "No rip window open.",
+      message: "No rip window open."
     });
   }
 
@@ -257,7 +186,7 @@ app.post("/submit-rip", (req, res) => {
 
   res.json({
     success: true,
-    message: "Viewer added to rip list.",
+    message: "Viewer added to rip list."
   });
 });
 
@@ -265,13 +194,13 @@ app.post("/submit-rip", (req, res) => {
 // CLOSE RIP WINDOW & AWARD PACKS
 // ------------------------------
 
-app.post("/resolve-rip-window", async (req, res) => {
+app.post("/resolve-rip-window", (req, res) => {
   const { channelId } = req.body;
 
   if (!ripWindowOpen) {
     return res.json({
       success: false,
-      message: "No rip window open.",
+      message: "No rip window open."
     });
   }
 
@@ -282,19 +211,10 @@ app.post("/resolve-rip-window", async (req, res) => {
   for (const viewerId of ripParticipants) {
     try {
       const result = performRipCard(channelId, viewerId);
-
-      // 🔥 NEW — Broadcast to extension
-      await sendPubSub(channelId, {
-        type: "rip-result",
-        viewerId,
-        rarity: result.rarity,
-        card: result.card,
-      });
-
       winners.push({
         viewerId,
         rarity: result.rarity,
-        card: result.card,
+        card: result.card
       });
     } catch (err) {
       console.error("Error awarding pack:", err);
@@ -305,37 +225,29 @@ app.post("/resolve-rip-window", async (req, res) => {
 
   res.json({
     success: true,
-    winners,
+    winners
   });
 });
 
 // ------------------------------
-// PUBLIC /rip-card
+// PUBLIC /rip-card ENDPOINT
 // ------------------------------
 
-app.post("/rip-card", async (req, res) => {
+app.post("/rip-card", (req, res) => {
   try {
     const { channelId, viewerId } = req.body;
     const result = performRipCard(channelId, viewerId);
 
-    // 🔥 NEW — Broadcast
-    await sendPubSub(channelId, {
-      type: "rip-result",
-      viewerId,
-      rarity: result.rarity,
-      card: result.card,
-    });
-
     res.json({
       success: true,
       rarity: result.rarity,
-      card: result.card,
+      card: result.card
     });
   } catch (err) {
     console.error("RIP CARD ERROR:", err);
     res.status(500).json({
       success: false,
-      error: err.message,
+      error: err.message
     });
   }
 });
@@ -344,7 +256,7 @@ app.post("/rip-card", async (req, res) => {
 // START SERVER
 // ------------------------------
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log("Backend running at http://localhost:" + PORT);
 });
