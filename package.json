@@ -6,9 +6,7 @@
     "body-parser": "latest",
     "cors": "latest",
     "express": "latest",
+    "jsonwebtoken": "latest",
+    "node-fetch": "3.3.2",
     "tmi.js": "^1.8.5"
   },
-  "scripts": {
-    "start": "node index.js"
-  }
-}
