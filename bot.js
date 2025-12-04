@@ -14,7 +14,7 @@ const CHANNEL_NAME = "zestyadventurebot";
 //    PASTE YOUR REAL TOKEN BETWEEN THE QUOTES, BUT NEVER SHARE IT PUBLICLY.
 const BOT_OAUTH_TOKEN = "oauth:x3bvvjihgngc3zfsfquhczfpk3by7f";
 
-// 4) Your backend URL (for now, local)
+// 4) Your backend URL — UPDATED FOR RAILWAY
 const BACKEND_URL = "https://tcg-backend-production-29a0.up.railway.app";
 
 // =========================
@@ -161,17 +161,6 @@ function startRipWindow() {
         CHANNEL_NAME,
         `Pack window closed! Congratulations: ${summary}`
       );
-    }
-
-    // Tell the backend that a rip just happened so overlays can refresh
-    try {
-      await fetch(`${BACKEND_URL}/rip-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ channelId: CHANNEL_NAME })
-      });
-    } catch (err) {
-      console.error("Failed to notify backend about rip event:", err);
     }
   }, SEVENTY_SECONDS);
 }
